@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="javadoc">
+    <target name="javadoc">
+        <javadoc access="public" author="true" classpath="C:\Users\TJPlaysNow\Downloads\JDA-3.3.1_303-withDependencies.jar;C:\Users\TJPlaysNow\Downloads\spigot-1.12.2.jar" destdir="doc" doctitle="Discord Bot API JavaDoc" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" packagenames="com.pzg.www.discord.config,com.pzg.www.discord.object,com.pzg.www.discord.main,com.pzg.www.discord.main.commands,com.pzg.www.discord.main.consolecommands" source="1.8" sourcepath="src" splitindex="true" use="true" version="true"/>
+    </target>
+</project>
