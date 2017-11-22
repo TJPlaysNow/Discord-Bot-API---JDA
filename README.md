@@ -6,4 +6,4 @@ My official API (Wrapper) of JDA for Discord Bots mainly used on Minecraft serve
   * [Discord Bot API JavaDoc](http://tjplaysnow.ddns.net/portfolio/minecraft-plugins/Discord-Bot-API/doc/)
 
 * Tutorial:
-  * So far there are no tutorials, if you make a tutorial feel free to tell me so I can share it with everyone.
+  * [http://tjplaysnow.ddns.net/portfolio/minecraft-plugins/Discord-Bot-API/](Text tutorial v1)
