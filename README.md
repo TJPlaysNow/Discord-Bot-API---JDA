@@ -1,4 +1,4 @@
-# Discord-Bot-API---JDA
+# Discord-Bot-API - JDA
 My official API (Wrapper) of JDA for Discord Bots mainly used on Minecraft servers.
 
 * Downloads:
