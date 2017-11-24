@@ -40,7 +40,7 @@ public class Bot implements EventListener {
 	private BotConsoleCommands consoleCommands;
 	private BotThread botThread;
 	
-	private Action loadAction;
+	private Action loadAction = null;
 	
 	/**
 	 * Create a new bot.
@@ -52,7 +52,9 @@ public class Bot implements EventListener {
 		commands = new ArrayList<Command>();
 		badWords = new ArrayList<String>();
 		mutedUsers = new ArrayList<User>();
-		loadAction = new Action() {@Override public void run() {}};
+		if (loadAction == null) {
+			loadAction = new Action() {@Override public void run() {}};
+		}
 		try {
 			jda = new JDABuilder(AccountType.BOT).setToken(token).addEventListener(this).buildBlocking();
 			isOnline = true;
