@@ -1,8 +1,10 @@
 package com.pzg.www.discord.object;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
+import com.pzg.www.discord.utils.InputUtils;
 
 /**
  * <b>Console Command Class</b><br>
@@ -10,22 +12,16 @@ import java.util.Scanner;
  * @version 1.0
  * @author TJPlaysNow
  */
-public class BotConsoleCommands implements Runnable {
-	
-	private Bot bot;
+public class BotConsoleCommands {
 	
 	private List<ConsoleCommand> commands;
-	private Scanner scanner;
 	
 	/**
 	 * Create a new console command manager.
 	 * @param bot The bot that is creating the manager.
 	 */
-	public BotConsoleCommands(Bot bot) {
-		this.bot = bot;
+	public BotConsoleCommands() {
 		commands = new ArrayList<ConsoleCommand>();
-		new Thread(this).start();
-		Thread.currentThread().setName("Console Command Manager");
 	}
 	
 	/**
@@ -50,16 +46,19 @@ public class BotConsoleCommands implements Runnable {
 	 * to test if the next command ran is a <br>
 	 * <b>Console Command</b> and will run it if so.</i>
 	 */
-	@Override
 	public void run() {
-		while (bot.isOnline()) {
-			scanner = new Scanner(System.in);
-			String[] args = scanner.nextLine().split(" ");
+		Closeable reader = InputUtils.scanLines(System.in, line -> {
+			String[] args = line.split(" ");
 			for (ConsoleCommand command : commands) {
 				if (args[0].equalsIgnoreCase(command.getLabel())) {
 					command.run(args);
 				}
 			}
+		});
+		try {
+			reader.close();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 }

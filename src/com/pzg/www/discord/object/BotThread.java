@@ -45,6 +45,7 @@ public class BotThread implements Runnable {
 	@Override
 	public void run() {
 		while (bot.isOnline()) {
+//			Check to see if there is an action needed to run.
 			List<Action> delete = new ArrayList<Action>();
 			for (Action action : actions.keySet()) {
 				if (System.currentTimeMillis() >= actions.get(action)) {
@@ -55,11 +56,8 @@ public class BotThread implements Runnable {
 			for (Action action : delete) {
 				actions.remove(action);
 			}
-			try {
-				Thread.sleep(TimeUnit.MILLISECONDS.toSeconds(1));
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+//			Check to see if a command was typed into the console
+			bot.consoleCheck();
 		}
 	}
 }

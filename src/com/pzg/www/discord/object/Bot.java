@@ -62,7 +62,7 @@ public class Bot implements EventListener {
 			e.printStackTrace();
 			isOnline = false;
 		}
-		consoleCommands = new BotConsoleCommands(this);
+		consoleCommands = new BotConsoleCommands();
 		botThread = new BotThread(this);
 	}
 	
@@ -183,6 +183,14 @@ public class Bot implements EventListener {
 		} else {
 			jda.getPresence().setGame(Game.of(game));
 		}
+	}
+	
+	/**
+	 * <b>DO NOT CALL THIS METHOD</b><br><br>
+	 * <i>This method it used directly by <b>Bot</b>.</i>
+	 */
+	public void consoleCheck() {
+		consoleCommands.run();
 	}
 	
 	/**
