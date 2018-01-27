@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 public class BotThread implements Runnable {
 	
 	private Bot bot;
-	private HashMap<Action, Long> actions;
+	private HashMap<Runnable, Long> actions;
 	
 	/**
 	 * Create a new Action Manager that the bot uses.
@@ -22,7 +22,7 @@ public class BotThread implements Runnable {
 	 */
 	public BotThread(Bot bot) {
 		this.bot = bot;
-		actions = new HashMap<Action, Long>();
+		actions = new HashMap<Runnable, Long>();
 		new Thread(this).start();
 		Thread.currentThread().setName("Bot Action Thread");
 	}
@@ -32,7 +32,7 @@ public class BotThread implements Runnable {
 	 * @param action The action to be run.
 	 * @param seconds The time in seconds to wait before running the action.
 	 */
-	public void addAction(Action action, int seconds) {
+	public void addAction(Runnable action, int seconds) {
 		long time = TimeUnit.SECONDS.toMillis(seconds) + System.currentTimeMillis();
 		actions.put(action, time);
 	}
@@ -46,18 +46,18 @@ public class BotThread implements Runnable {
 	public void run() {
 		while (bot.isOnline()) {
 //			Check to see if there is an action needed to run.
-			List<Action> delete = new ArrayList<Action>();
-			for (Action action : actions.keySet()) {
+			List<Runnable> delete = new ArrayList<Runnable>();
+			for (Runnable action : actions.keySet()) {
 				if (System.currentTimeMillis() >= actions.get(action)) {
 					action.run();
 					delete.add(action);
 				}
 			}
-			for (Action action : delete) {
+			for (Runnable action : delete) {
 				actions.remove(action);
 			}
 //			Check to see if a command was typed into the console
-			bot.consoleCheck();
+//			bot.consoleCheck();
 		}
 	}
 }

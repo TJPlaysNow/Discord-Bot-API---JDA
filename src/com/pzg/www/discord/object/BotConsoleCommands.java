@@ -1,10 +1,7 @@
 package com.pzg.www.discord.object;
 
-import java.io.Closeable;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import com.pzg.www.discord.utils.InputUtils;
 
 /**
  * <b>Console Command Class</b><br>
@@ -16,11 +13,14 @@ public class BotConsoleCommands {
 	
 	private List<ConsoleCommand> commands;
 	
+//	private Bot bot;
+	
 	/**
 	 * Create a new console command manager.
 	 * @param bot The bot that is creating the manager.
 	 */
-	public BotConsoleCommands() {
+	public BotConsoleCommands(Bot bot) {
+//		this.bot = bot;
 		commands = new ArrayList<ConsoleCommand>();
 	}
 	
@@ -47,18 +47,6 @@ public class BotConsoleCommands {
 	 * <b>Console Command</b> and will run it if so.</i>
 	 */
 	public void run() {
-		Closeable reader = InputUtils.scanLines(System.in, line -> {
-			String[] args = line.split(" ");
-			for (ConsoleCommand command : commands) {
-				if (args[0].equalsIgnoreCase(command.getLabel())) {
-					command.run(args);
-				}
-			}
-		});
-		try {
-			reader.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		
 	}
 }

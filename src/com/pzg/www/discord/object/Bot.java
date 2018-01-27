@@ -40,7 +40,7 @@ public class Bot implements EventListener {
 	private BotConsoleCommands consoleCommands;
 	private BotThread botThread;
 	
-	private Action loadAction = null;
+	private Runnable loadAction = null;
 	
 	/**
 	 * Create a new bot.
@@ -53,7 +53,7 @@ public class Bot implements EventListener {
 		badWords = new ArrayList<String>();
 		mutedUsers = new ArrayList<User>();
 		if (loadAction == null) {
-			loadAction = new Action() {@Override public void run() {}};
+			loadAction = () -> {};
 		}
 		try {
 			jda = new JDABuilder(AccountType.BOT).setToken(token).addEventListener(this).buildBlocking();
@@ -62,7 +62,7 @@ public class Bot implements EventListener {
 			e.printStackTrace();
 			isOnline = false;
 		}
-		consoleCommands = new BotConsoleCommands();
+		consoleCommands = new BotConsoleCommands(this);
 		botThread = new BotThread(this);
 	}
 	
@@ -128,6 +128,8 @@ public class Bot implements EventListener {
 	public void logout() {
 		jda.shutdown();
 		isOnline = false;
+		
+		
 	}
 	
 	/**
@@ -152,7 +154,7 @@ public class Bot implements EventListener {
 	 * @param action The action to be run.
 	 * @param seconds The time in seconds to wait before running the action.
 	 */
-	public void addAction(Action action, int seconds) {
+	public void addAction(Runnable action, int seconds) {
 		botThread.addAction(action, seconds);
 	}
 	
@@ -160,7 +162,7 @@ public class Bot implements EventListener {
 	 * Action to use on Bot loadup.
 	 * @param loadAction The action to be run.
 	 */
-	public void setLoadAction(Action loadAction) {
+	public void setLoadAction(Runnable loadAction) {
 		this.loadAction = loadAction;
 	}
 	
@@ -169,7 +171,7 @@ public class Bot implements EventListener {
 	 * @param game Playing text.
 	 */
 	public void setGame(String game) {
-		jda.getPresence().setGame(Game.of(game));
+		jda.getPresence().setGame(Game.playing(game));
 	}
 	
 	/**
@@ -179,15 +181,15 @@ public class Bot implements EventListener {
 	 */
 	public void setGame(String game, String url) {
 		if (Game.isValidStreamingUrl(url)) {
-			jda.getPresence().setGame(Game.of(game, url));
+			jda.getPresence().setGame(Game.streaming(game, url));
 		} else {
-			jda.getPresence().setGame(Game.of(game));
+			jda.getPresence().setGame(Game.playing(game));
 		}
 	}
 	
 	/**
 	 * <b>DO NOT CALL THIS METHOD</b><br><br>
-	 * <i>This method it used directly by <b>Bot</b>.</i>
+	 * <i>This method is used directly by <b>Bot</b>.</i>
 	 */
 	public void consoleCheck() {
 		consoleCommands.run();
@@ -205,14 +207,11 @@ public class Bot implements EventListener {
 		if (e instanceof MessageReceivedEvent) {
 			MessageReceivedEvent event = (MessageReceivedEvent) e;
 			for (String badWord : badWords) {
-				if (event.getMessage().getContent().contains(badWord)) {
+				if (event.getMessage().getContentRaw().contains(badWord) || event.getMessage().getContentDisplay().contains(badWord) || event.getMessage().getContentStripped().contains(badWord)) {
 					event.getMessage().delete().complete();
 					Message message = event.getChannel().sendMessage("Watch your language " + event.getAuthor().getAsMention() + "!!").complete();
-					botThread.addAction(new Action() {
-						@Override
-						public void run() {
-							message.delete().complete();
-						}
+					botThread.addAction(() -> {
+						message.delete().complete();
 					}, 5);
 				}
 			}
@@ -223,23 +222,20 @@ public class Bot implements EventListener {
 					} else {
 						event.getMessage().delete().complete();
 						Message message = event.getChannel().sendMessage("You are muted " + user.getAsMention() + ".").complete();
-						botThread.addAction(new Action() {
-							@Override
-							public void run() {
-								message.delete().complete();
-							}
+						botThread.addAction(() -> {
+							message.delete().complete();
 						}, 5);
 					}
 				}
 			}
 			for (Command command : commands) {
-				if (event.getMessage().getContent().startsWith(prefix)) {
+				if (event.getMessage().getContentRaw().startsWith(prefix)) {
 					Message message = event.getMessage();
 					User sender = event.getAuthor();
 					MessageChannel channel = event.getChannel();
 					Guild guild = event.getGuild();
 					
-					String[] commandArgs = message.getContent().substring(prefix.length()).split(" ");
+					String[] commandArgs = message.getContentRaw().substring(prefix.length()).split(" ");
 					
 					List<String> args = new ArrayList<String>();
 					
@@ -250,12 +246,15 @@ public class Bot implements EventListener {
 					
 					if (commandArgs[0].equalsIgnoreCase(command.getLabel())) {
 						if (PermissionUtil.checkPermission(event.getMember(), command.getPermissionNeeded())) {
+							System.out.println("Running command " + command.getLabel());
 							command.run(sender, channel, guild, commandArgs[0], args);
 						}
 					}
 //					TODO: Fix the errors recieved by deleting the message.
 //					if (!channel.getType().equals(ChannelType.PRIVATE)) {
-//						event.getMessage().delete().complete();
+//						addAction(() -> {
+//							event.getMessage().delete().complete();
+//						}, 5);
 //					}
 				}
 			}
