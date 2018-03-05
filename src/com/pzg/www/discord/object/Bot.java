@@ -5,6 +5,12 @@ import java.util.List;
 
 import javax.security.auth.login.LoginException;
 
+import org.bukkit.Bukkit;
+
+import com.pzg.www.discord.main.PluginMain;
+import com.pzg.www.discord.object.logger.LogLevel;
+import com.pzg.www.discord.object.logger.Logger;
+
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
@@ -17,7 +23,6 @@ import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.EventListener;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 
@@ -42,28 +47,85 @@ public class Bot implements EventListener {
 	
 	private Runnable loadAction = null;
 	
+	private boolean isPlugin = false;
+	
+	private Logger logger;
+	
 	/**
 	 * Create a new bot.
 	 * @param token Verification token recieved from <a href="https://discordapp.com/developers/applications/me">Discord</a>
 	 * @param prefix The command prefix.
 	 */
 	public Bot(String token, String prefix) {
+		if (Bukkit.getServer() != null) {
+			isPlugin = true;
+		}
+		
+		logger = new Logger(LogLevel.INFO);
+		
 		this.prefix = prefix;
 		commands = new ArrayList<Command>();
 		badWords = new ArrayList<String>();
 		mutedUsers = new ArrayList<User>();
+		
 		if (loadAction == null) {
 			loadAction = () -> {};
 		}
+		
 		try {
 			jda = new JDABuilder(AccountType.BOT).setToken(token).addEventListener(this).buildBlocking();
 			isOnline = true;
-		} catch (LoginException | IllegalArgumentException | RateLimitedException | InterruptedException e) {
+		} catch (LoginException | IllegalArgumentException | InterruptedException e) {
 			e.printStackTrace();
 			isOnline = false;
 		}
-		consoleCommands = new BotConsoleCommands(this);
-		botThread = new BotThread(this);
+		
+		
+		consoleCommands = new BotConsoleCommands(this, isPlugin);
+		if (isPlugin) {
+			botThread = new BotThread(this, PluginMain.getPlugin(PluginMain.class));
+		} else {
+			botThread = new BotThread(this);
+		}
+	}
+	
+	/**
+	 * Create a new bot.
+	 * @param token Verification token recieved from <a href="https://discordapp.com/developers/applications/me">Discord</a>
+	 * @param prefix The command prefix.
+	 * @param logLevel The Log Level for the Bot's logger.
+	 */
+	public Bot(String token, String prefix, LogLevel logLevel) {
+		if (Bukkit.getServer() != null) {
+			isPlugin = true;
+		}
+		
+		logger = new Logger(logLevel);
+		
+		this.prefix = prefix;
+		commands = new ArrayList<Command>();
+		badWords = new ArrayList<String>();
+		mutedUsers = new ArrayList<User>();
+		
+		if (loadAction == null) {
+			loadAction = () -> {};
+		}
+		
+		try {
+			jda = new JDABuilder(AccountType.BOT).setToken(token).addEventListener(this).buildBlocking();
+			isOnline = true;
+		} catch (LoginException | IllegalArgumentException | InterruptedException e) {
+			e.printStackTrace();
+			isOnline = false;
+		}
+		
+		
+		consoleCommands = new BotConsoleCommands(this, isPlugin);
+		if (isPlugin) {
+			botThread = new BotThread(this, PluginMain.getPlugin(PluginMain.class));
+		} else {
+			botThread = new BotThread(this);
+		}
 	}
 	
 	/**
@@ -253,7 +315,7 @@ public class Bot implements EventListener {
 //					TODO: Fix the errors recieved by deleting the message.
 //					if (!channel.getType().equals(ChannelType.PRIVATE)) {
 //						addAction(() -> {
-//							event.getMessage().delete().complete();
+//							event.getChannel().getMessageById(event.getMessageId()).complete().delete().complete();
 //						}, 5);
 //					}
 				}
@@ -261,4 +323,11 @@ public class Bot implements EventListener {
 		}
 	}
 	
+	public String getPrefix() {
+		return prefix;
+	}
+	
+	public Logger logger() {
+		return logger;
+	}
 }

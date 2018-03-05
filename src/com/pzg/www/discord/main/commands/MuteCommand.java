@@ -41,7 +41,7 @@ public class MuteCommand implements Command {
 			for (Member member : guild.getMembers()) {
 				if (member.getAsMention().equalsIgnoreCase(args.get(0))) {
 					bot.addMutedUser(member.getUser());
-					channel.sendMessage("Muted " + member.getAsMention() + ".");
+					channel.sendMessage("Muted " + member.getAsMention() + ".").complete();
 					return true;
 				}
 			}

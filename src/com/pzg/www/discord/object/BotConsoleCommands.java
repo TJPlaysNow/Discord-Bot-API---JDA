@@ -1,7 +1,11 @@
 package com.pzg.www.discord.object;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandMap;
 
 /**
  * <b>Console Command Class</b><br>
@@ -9,19 +13,25 @@ import java.util.List;
  * @version 1.0
  * @author TJPlaysNow
  */
-public class BotConsoleCommands {
+public class BotConsoleCommands implements Runnable {
 	
 	private List<ConsoleCommand> commands;
-	
-//	private Bot bot;
+	private boolean isPlugin;
+	private Thread thread;
+	private boolean isRunning;
 	
 	/**
 	 * Create a new console command manager.
 	 * @param bot The bot that is creating the manager.
 	 */
-	public BotConsoleCommands(Bot bot) {
-//		this.bot = bot;
+	public BotConsoleCommands(Bot bot, boolean isPlugin) {
+		this.isPlugin = isPlugin;
 		commands = new ArrayList<ConsoleCommand>();
+		if (!isPlugin) {
+			isRunning = true;
+			thread = new Thread(this, "BotConsoleCommands");
+			thread.start();
+		}
 	}
 	
 	/**
@@ -30,6 +40,16 @@ public class BotConsoleCommands {
 	 */
 	public void addCommand(ConsoleCommand command) {
 		commands.add(command);
+		if (isPlugin) {
+			try {
+				final Field bukkitCommandMap = Bukkit.getServer().getClass().getDeclaredField("commandMap");
+				bukkitCommandMap.setAccessible(true);
+				CommandMap commandMap = (CommandMap) bukkitCommandMap.get(Bukkit.getServer());
+				commandMap.register(command.getLabel(), new BotConsoleCommandBukkit(command));
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	/**
@@ -40,6 +60,11 @@ public class BotConsoleCommands {
 		return commands;
 	}
 	
+	public void stop() {
+		thread.interrupt();
+		isRunning = false;
+	}
+	
 	/**
 	 * <b>DO NOT CALL THIS METHOD</b><br><br>
 	 * <i>This method is constantly being looped<br>
@@ -47,6 +72,8 @@ public class BotConsoleCommands {
 	 * <b>Console Command</b> and will run it if so.</i>
 	 */
 	public void run() {
-		
+		while (isRunning) {
+			
+		}
 	}
 }

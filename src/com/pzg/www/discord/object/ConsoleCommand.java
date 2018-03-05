@@ -13,6 +13,12 @@ public interface ConsoleCommand {
 	public String getLabel();
 	
 	/**
+	 * This is used to tell how to use the command.
+	 * @return The command's usage.
+	 */
+	public String getUsage();
+	
+	/**
 	 * This is used for simple help commands.
 	 * @return The command's help information.
 	 */

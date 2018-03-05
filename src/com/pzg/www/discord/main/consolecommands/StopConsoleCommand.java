@@ -27,4 +27,9 @@ public class StopConsoleCommand implements ConsoleCommand {
 	public String getDescrition() {
 		return "Stops the program properly.";
 	}
+
+	@Override
+	public String getUsage() {
+		return "stop";
+	}
 }

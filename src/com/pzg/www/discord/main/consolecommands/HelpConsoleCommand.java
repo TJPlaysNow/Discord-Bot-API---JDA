@@ -17,6 +17,7 @@ public class HelpConsoleCommand implements ConsoleCommand {
 		for (ConsoleCommand command : bot.getConsoleCommands()) {
 			System.out.println("Command: " + command.getLabel());
 			System.out.println(" - Description: " + command.getDescrition());
+			System.out.println(" - Usage: " + command.getUsage());
 		}
 		System.out.println("");
 	}
@@ -29,5 +30,10 @@ public class HelpConsoleCommand implements ConsoleCommand {
 	@Override
 	public String getDescrition() {
 		return "Returns a list of commands and there information.";
+	}
+
+	@Override
+	public String getUsage() {
+		return "help";
 	}
 }

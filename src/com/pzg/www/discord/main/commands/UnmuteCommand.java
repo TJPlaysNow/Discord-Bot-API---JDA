@@ -41,7 +41,7 @@ public class UnmuteCommand implements Command {
 			for (Member member : guild.getMembers()) {
 				if (member.getAsMention().equalsIgnoreCase(args.get(0))) {
 					bot.removeMutedUser(member.getUser());
-					channel.sendMessage("Unmuted " + member.getAsMention() + ".");
+					channel.sendMessage("Unmuted " + member.getAsMention() + ".").complete();
 					return true;
 				}
 			}

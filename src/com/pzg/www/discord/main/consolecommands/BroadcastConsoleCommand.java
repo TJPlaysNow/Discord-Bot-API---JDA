@@ -43,4 +43,9 @@ public class BroadcastConsoleCommand implements ConsoleCommand {
 	public String getDescrition() {
 		return "Broadcasts a message to a channel in every guild.";
 	}
+
+	@Override
+	public String getUsage() {
+		return "broadcast <Message...>";
+	}
 }

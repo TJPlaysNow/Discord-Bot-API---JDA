@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
+
 /**
  * <b>Action Manager Class</b><br>
  * <i>Used dirctly by the <b>Bot</b>.</i>
@@ -15,6 +18,8 @@ public class BotThread implements Runnable {
 	
 	private Bot bot;
 	private HashMap<Runnable, Long> actions;
+	private Thread thread;
+	private Plugin plugin;
 	
 	/**
 	 * Create a new Action Manager that the bot uses.
@@ -23,8 +28,19 @@ public class BotThread implements Runnable {
 	public BotThread(Bot bot) {
 		this.bot = bot;
 		actions = new HashMap<Runnable, Long>();
-		new Thread(this).start();
-		Thread.currentThread().setName("Bot Action Thread");
+		thread = new Thread(this, "BotThread");
+		thread.start();
+	}
+	
+	/**
+	 * Create a new Action Manager that the bot uses.
+	 * @param bot The bot that is creating the manager.
+	 * @param plugin The plugin that the bot is running from.
+	 */
+	public BotThread(Bot bot, Plugin plugin) {
+		this.bot = bot;
+		this.plugin = plugin;
+		actions = new HashMap<Runnable, Long>();
 	}
 	
 	/**
@@ -33,8 +49,12 @@ public class BotThread implements Runnable {
 	 * @param seconds The time in seconds to wait before running the action.
 	 */
 	public void addAction(Runnable action, int seconds) {
-		long time = TimeUnit.SECONDS.toMillis(seconds) + System.currentTimeMillis();
-		actions.put(action, time);
+		if (plugin != null) {
+			Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, action, (seconds * 20));
+		} else {
+			long time = TimeUnit.SECONDS.toMillis(seconds) + System.currentTimeMillis();
+			actions.put(action, time);
+		}
 	}
 	
 	/**
