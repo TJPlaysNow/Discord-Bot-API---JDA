@@ -15,6 +15,7 @@ import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
@@ -80,15 +81,14 @@ public class Bot implements EventListener {
 			isOnline = false;
 		}
 		
-		
-		consoleCommands = new BotConsoleCommands(this, isPlugin);
+		consoleCommands = new BotConsoleCommands(isPlugin);
 		if (isPlugin) {
-			botThread = new BotThread(this, PluginMain.getPlugin(PluginMain.class));
+			botThread = new BotThread(PluginMain.getPlugin(PluginMain.class));
 		} else {
-			botThread = new BotThread(this);
+			botThread = new BotThread();
 		}
 	}
-	
+
 	/**
 	 * Create a new bot.
 	 * @param token Verification token recieved from <a href="https://discordapp.com/developers/applications/me">Discord</a>
@@ -119,12 +119,11 @@ public class Bot implements EventListener {
 			isOnline = false;
 		}
 		
-		
-		consoleCommands = new BotConsoleCommands(this, isPlugin);
+		consoleCommands = new BotConsoleCommands(isPlugin);
 		if (isPlugin) {
-			botThread = new BotThread(this, PluginMain.getPlugin(PluginMain.class));
+			botThread = new BotThread(PluginMain.getPlugin(PluginMain.class));
 		} else {
-			botThread = new BotThread(this);
+			botThread = new BotThread();
 		}
 	}
 	
@@ -189,9 +188,9 @@ public class Bot implements EventListener {
 	 */
 	public void logout() {
 		jda.shutdown();
+		consoleCommands.stop();
+		botThread.stop();
 		isOnline = false;
-		
-		
 	}
 	
 	/**
@@ -273,7 +272,7 @@ public class Bot implements EventListener {
 					event.getMessage().delete().complete();
 					Message message = event.getChannel().sendMessage("Watch your language " + event.getAuthor().getAsMention() + "!!").complete();
 					botThread.addAction(() -> {
-						message.delete().complete();
+						message.delete().queue();
 					}, 5);
 				}
 			}
@@ -285,48 +284,51 @@ public class Bot implements EventListener {
 						event.getMessage().delete().complete();
 						Message message = event.getChannel().sendMessage("You are muted " + user.getAsMention() + ".").complete();
 						botThread.addAction(() -> {
-							message.delete().complete();
+							message.delete().queue();
 						}, 5);
 					}
 				}
 			}
 			for (Command command : commands) {
 				if (event.getMessage().getContentRaw().startsWith(prefix)) {
-					Message message = event.getMessage();
 					User sender = event.getAuthor();
 					MessageChannel channel = event.getChannel();
 					Guild guild = event.getGuild();
-					
-					String[] commandArgs = message.getContentRaw().substring(prefix.length()).split(" ");
-					
+					String[] commandArgs = event.getMessage().getContentRaw().substring(prefix.length()).split(" ");
 					List<String> args = new ArrayList<String>();
-					
 					for (String s : commandArgs) {
 						args.add(s);
 					}
 					args.remove(0);
-					
 					if (commandArgs[0].equalsIgnoreCase(command.getLabel())) {
 						if (PermissionUtil.checkPermission(event.getMember(), command.getPermissionNeeded())) {
-							System.out.println("Running command " + command.getLabel());
+							logger.info("Running command " + command.getLabel());
+							event.getMessage().delete().complete();
 							command.run(sender, channel, guild, commandArgs[0], args);
+							if (!channel.getType().equals(ChannelType.PRIVATE)) {
+								addAction(() -> {
+									logger.spam("Message delete time.");
+								}, command.getDeleteTime());
+							}
 						}
 					}
-//					TODO: Fix the errors recieved by deleting the message.
-//					if (!channel.getType().equals(ChannelType.PRIVATE)) {
-//						addAction(() -> {
-//							event.getChannel().getMessageById(event.getMessageId()).complete().delete().complete();
-//						}, 5);
-//					}
 				}
 			}
 		}
 	}
 	
+	/**
+	 * Get the prefix being used.
+	 * @return <b>String</b>
+	 */
 	public String getPrefix() {
 		return prefix;
 	}
 	
+	/**
+	 * Get the logger for logging purposes.
+	 * @return <b>Logger</b>
+	 */
 	public Logger logger() {
 		return logger;
 	}

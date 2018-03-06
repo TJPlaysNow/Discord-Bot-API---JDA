@@ -9,6 +9,7 @@ package com.pzg.www.discord.object.logger;
  */
 public class Logger {
 	
+	private String log;
 	private LogLevel printLevel;
 	
 	/**
@@ -31,10 +32,30 @@ public class Logger {
 	 */
 	public void log(LogLevel level, String message) {
 		if (printLevel.getLevel() >= level.getLevel()) {
-			if (printLevel.getLevel() <= 0) if (level == LogLevel.SPAM)  System.out.println(Colors.WHITE +  "[Bot] [SPAM]: "    + Colors.RESET + message);
-			if (printLevel.getLevel() <= 1) if (level == LogLevel.INFO)  System.out.println(Colors.WHITE +  "[Bot] [INFO]: "    + Colors.RESET + message);
-			if (printLevel.getLevel() <= 2) if (level == LogLevel.WARN)  System.out.println(Colors.YELLOW + "[Bot] [WARNING]: " + Colors.RESET + message);
-			if (printLevel.getLevel() <= 3) if (level == LogLevel.ERROR) System.out.println(Colors.RED +    "[Bot] [ERROR]: "   + Colors.RESET + message);
+			if (printLevel.getLevel() <= 0) {
+				if (level == LogLevel.SPAM) {
+					log += Colors.WHITE + "[Bot] [SPAM]: " + Colors.RESET + message + "\n";
+					System.out.println(Colors.WHITE + "[Bot] [SPAM]: " + Colors.RESET + message);
+				}
+			}
+			if (printLevel.getLevel() <= 1) {
+				if (level == LogLevel.INFO) {
+					log += Colors.WHITE + "[Bot] [INFO]: " + Colors.RESET + message + "\n";
+					System.out.println(Colors.WHITE + "[Bot] [INFO]: " + Colors.RESET + message);
+				}
+			}
+			if (printLevel.getLevel() <= 2) {
+				if (level == LogLevel.WARN) {
+					log += Colors.YELLOW + "[Bot] [WARNING]: " + Colors.RESET + message + "\n";
+					System.out.println(Colors.YELLOW + "[Bot] [WARNING]: " + Colors.RESET + message);
+				}
+			}
+			if (printLevel.getLevel() <= 3) {
+				if (level == LogLevel.ERROR) {
+					log += Colors.RED + "[Bot] [ERROR]: " + Colors.RESET + message + "\n";
+					System.out.println(Colors.RED + "[Bot] [ERROR]: " + Colors.RESET + message);
+				}
+			}
 		}
 	}
 	
@@ -47,6 +68,7 @@ public class Logger {
 	 */
 	public void spam(String message) {
 		if (printLevel.getLevel() <= 0) {
+			log += Colors.WHITE + "[Bot] [SPAM]: " + Colors.RESET + message + "\n";
 			System.out.println(Colors.WHITE + "[Bot] [SPAM]: " + Colors.RESET + message);
 		}
 	}
@@ -60,6 +82,7 @@ public class Logger {
 	 */
 	public void info(String message) {
 		if (printLevel.getLevel() <= 1) {
+			log += Colors.WHITE + "[Bot] [INFO]: " + Colors.RESET + message + "\n";
 			System.out.println(Colors.WHITE + "[Bot] [INFO]: " + Colors.RESET + message);
 		}
 	}
@@ -73,6 +96,7 @@ public class Logger {
 	 */
 	public void warn(String message) {
 		if (printLevel.getLevel() <= 2) {
+			log += Colors.YELLOW + "[Bot] [WARNING]: " + Colors.RESET + message + "\n";
 			System.out.println(Colors.YELLOW + "[Bot] [WARNING]: " + Colors.RESET + message);
 		}
 	}
@@ -86,7 +110,16 @@ public class Logger {
 	 */
 	public void error(String message) {
 		if (printLevel.getLevel() <= 3) {
+			log += Colors.RED + "[Bot] [ERROR]: " + Colors.RESET + message + "\n";
 			System.out.println(Colors.RED + "[Bot] [ERROR]: " + Colors.RESET + message);
 		}
+	}
+	
+	/**
+	 * <b>Get the total Discord Bot Log</b>
+	 * @return <b>String</b>
+	 */
+	public String getLog() {
+		return log;
 	}
 }

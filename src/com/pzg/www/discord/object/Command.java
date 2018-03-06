@@ -1,9 +1,12 @@
 package com.pzg.www.discord.object;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
 
@@ -13,6 +16,7 @@ import net.dv8tion.jda.core.entities.User;
  * @author TJPlaysNow
  */
 public interface Command {
+	
 	/**
 	 * This is used to tell what the command's label is.
 	 * @return The command's label.
@@ -41,4 +45,21 @@ public interface Command {
 	 * @return True or False whether the command worked or not.
 	 */
 	public boolean run(User user, MessageChannel channel, Guild guild, String label, List<String> args);
+	
+	/**
+	 * Get's the time to wait before calling <b>delete()</b>
+	 * @return <b>int</b> Time to wait before deleting.
+	 */
+	default int getDeleteTime() {
+		return 5;
+	}
+	
+	/**
+	 * Use to delete messages after a period of time.<br>
+	 * Default time is 5 seconds, use <b>getDeleteTime()</b>
+	 * to specify how long it should wait.
+	 */
+	default Consumer<Message> delete() {
+	    return (message) -> message.delete().queueAfter(getDeleteTime(), TimeUnit.SECONDS);
+	}
 }

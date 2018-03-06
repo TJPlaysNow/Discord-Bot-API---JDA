@@ -16,18 +16,18 @@ import org.bukkit.plugin.Plugin;
  */
 public class BotThread implements Runnable {
 	
-	private Bot bot;
 	private HashMap<Runnable, Long> actions;
 	private Thread thread;
 	private Plugin plugin;
+	private boolean isRunning;
 	
 	/**
 	 * Create a new Action Manager that the bot uses.
 	 * @param bot The bot that is creating the manager.
 	 */
-	public BotThread(Bot bot) {
-		this.bot = bot;
+	public BotThread() {
 		actions = new HashMap<Runnable, Long>();
+		isRunning = true;
 		thread = new Thread(this, "BotThread");
 		thread.start();
 	}
@@ -37,8 +37,7 @@ public class BotThread implements Runnable {
 	 * @param bot The bot that is creating the manager.
 	 * @param plugin The plugin that the bot is running from.
 	 */
-	public BotThread(Bot bot, Plugin plugin) {
-		this.bot = bot;
+	public BotThread(Plugin plugin) {
 		this.plugin = plugin;
 		actions = new HashMap<Runnable, Long>();
 	}
@@ -58,13 +57,21 @@ public class BotThread implements Runnable {
 	}
 	
 	/**
+	 * Stops the Bot Thread thread.
+	 */
+	public void stop() {
+		thread.interrupt();
+		isRunning = false;
+	}
+	
+	/**
 	 * <b>DO NOT CALL THIS METHOD</b><br><br>
 	 * <i>This method is constantly being looped<br>
 	 * and will run an <b>Action</b> when time has come.</i>
 	 */
 	@Override
 	public void run() {
-		while (bot.isOnline()) {
+		while (isRunning) {
 //			Check to see if there is an action needed to run.
 			List<Runnable> delete = new ArrayList<Runnable>();
 			for (Runnable action : actions.keySet()) {
@@ -76,8 +83,6 @@ public class BotThread implements Runnable {
 			for (Runnable action : delete) {
 				actions.remove(action);
 			}
-//			Check to see if a command was typed into the console
-//			bot.consoleCheck();
 		}
 	}
 }

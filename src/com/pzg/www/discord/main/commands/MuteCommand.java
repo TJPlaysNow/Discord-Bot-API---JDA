@@ -13,7 +13,7 @@ import net.dv8tion.jda.core.entities.User;
 
 public class MuteCommand implements Command {
 	
-	private Bot bot;
+	private final Bot bot;
 	
 	public MuteCommand(Bot bot) {
 		this.bot = bot;
@@ -41,15 +41,15 @@ public class MuteCommand implements Command {
 			for (Member member : guild.getMembers()) {
 				if (member.getAsMention().equalsIgnoreCase(args.get(0))) {
 					bot.addMutedUser(member.getUser());
-					channel.sendMessage("Muted " + member.getAsMention() + ".").complete();
+					channel.sendMessage("Muted " + member.getAsMention() + ".").queue(delete());
 					return true;
 				}
 			}
 			if (!worked) {
-				channel.sendMessage("Can't mute that person as they weren't found. Try `!Mute [User]`").complete();
+				channel.sendMessage("Can't mute that person as they weren't found. Try `!Mute [User]`").queue(delete());
 			}
 		} else {
-			channel.sendMessage("Can't mute that person as the args weren't right. Try `!Mute [User]`").complete();
+			channel.sendMessage("Can't mute that person as the args weren't right. Try `!Mute [User]`").queue(delete());
 		}
 		return false;
 	}
