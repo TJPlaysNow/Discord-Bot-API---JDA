@@ -1,0 +1,5 @@
+name: Discord-Bot-API
+version: 1.0
+main: com.pzg.www.discord.main.BungeeMain
+description: This plugin is an API to use a Discord Bot.
+author: TJPlaysNow
