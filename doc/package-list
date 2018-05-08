@@ -1,5 +1,6 @@
-com.pzg.www.discord.config
-com.pzg.www.discord.main
-com.pzg.www.discord.main.commands
-com.pzg.www.discord.main.consolecommands
-com.pzg.www.discord.object
+com.tjplaysnow.discord.config
+com.tjplaysnow.discord.main
+com.tjplaysnow.discord.main.commands
+com.tjplaysnow.discord.main.consolecommands
+com.tjplaysnow.discord.object
+com.tjplaysnow.discord.object.logger
