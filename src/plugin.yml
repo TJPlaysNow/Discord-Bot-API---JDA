@@ -1,5 +1,5 @@
-name: Discord-Bot-API
+name: Discord-ProgramBot-API
 version: 1.0
-main: com.pzg.www.discord.main.PluginMain
-description: This plugin is an API to use a Discord Bot.
+main: PluginMain
+description: This plugin is an API to use a Discord ProgramBot.
 author: TJPlaysNow

@@ -1,0 +1,5 @@
+name: Discord-ProgramBot-API
+version: 1.0
+main: BungeeMain
+description: This plugin is an API to use a Discord ProgramBot.
+author: TJPlaysNow
