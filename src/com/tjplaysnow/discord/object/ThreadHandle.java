@@ -1,44 +1,28 @@
 package com.tjplaysnow.discord.object;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class ThreadHandle extends ProgramThread {
 	
-	private HashMap<Runnable, Long> actions;
+	private ScheduledExecutorService scheduledExecutorService;
 	
 	public ThreadHandle() {
-		super(true);
-		actions = new HashMap<>();
+		super(false);
+		scheduledExecutorService = Executors.newScheduledThreadPool(5);
 	}
 	
 	@Override
 	public void addAction(Runnable action, int seconds) {
-		long time = TimeUnit.SECONDS.toMillis(seconds) + System.currentTimeMillis();
-		actions.put(action, time);
+		scheduledExecutorService.schedule(action, seconds, TimeUnit.SECONDS);
 	}
 	
 	@Override
 	public void stop() {
-		stopThread();
+		scheduledExecutorService.shutdown();
 	}
 	
 	@Override
-	public void run() {
-		while (isRunning()) {
-//			Check to see if there is an action needed to run.
-			List<Runnable> delete = new ArrayList<>();
-			for (Runnable action : actions.keySet()) {
-				if (System.currentTimeMillis() >= actions.get(action)) {
-					action.run();
-					delete.add(action);
-				}
-			}
-			for (Runnable action : delete) {
-				actions.remove(action);
-			}
-		}
-	}
+	public void run() {}
 }

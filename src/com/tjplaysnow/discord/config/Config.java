@@ -98,4 +98,8 @@ public class Config {
 		}
 		return ret;
 	}
+	
+	public java.io.File getFile() {
+		return conf.getFile();
+	}
 }

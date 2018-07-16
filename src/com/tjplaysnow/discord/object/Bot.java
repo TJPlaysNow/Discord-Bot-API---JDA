@@ -1,5 +1,7 @@
 package com.tjplaysnow.discord.object;
 
+import com.tjplaysnow.discord.config.Config;
+import com.tjplaysnow.discord.config.File;
 import com.tjplaysnow.discord.object.logger.LogLevel;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
@@ -9,6 +11,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -29,10 +32,11 @@ public class Bot extends ProgramBot {
 	private BiConsumer<MessageReceivedEvent, ProgramCommand> commandRun;
 	
 	private List<Predicate<Event>> events;
+	private Config config;
 	
-	//	TODO: Change these var types.
 	private ProgramThread botThread;
 	private ProgramConsoleCommandManager consoleCommandManager;
+	
 	
 	public Bot(String token, String prefix) {
 		super(token);
@@ -88,6 +92,8 @@ public class Bot extends ProgramBot {
 				}
 			}
 		};
+		
+		config = new Config(new File("Config.txt"));
 		
 		build();
 	}
@@ -147,6 +153,8 @@ public class Bot extends ProgramBot {
 			}
 		};
 		
+		config = new Config(new File("Config.txt"));
+		
 		build();
 	}
 	
@@ -191,6 +199,14 @@ public class Bot extends ProgramBot {
 	}
 	
 	/**
+	 * Get the bot's default config.
+	 * @return Config
+	 */
+	public Config getConfig() {
+		return config;
+	}
+	
+	/**
 	 * Add a command to the bot.
 	 * @param command A new command.
 	 */
@@ -227,6 +243,11 @@ public class Bot extends ProgramBot {
 		super.logout();
 	}
 	
+	@Deprecated
+	public ProgramThread getBotThread() {
+		return botThread;
+	}
+	
 	public List<ProgramCommand> getCommands() {
 		return commands;
 	}
@@ -253,7 +274,7 @@ public class Bot extends ProgramBot {
 				return command.getLabel();
 			}
 			@Override
-			public String getDescrition() {
+			public String getDescription() {
 				return command.getDescrition();
 			}
 			@Override
@@ -277,6 +298,16 @@ public class Bot extends ProgramBot {
 	 */
 	public void addBadWord(String badWord) {
 		badWords.add(badWord);
+	}
+	
+	/**
+	 * Add a bad word, and when a user uses the word it will be deleted and they will be warned.
+	 * @param badWords The bad words to add.
+	 */
+	public void addBadWords(String... badWords) {
+		for (String badWord : badWords) {
+			this.badWords.add(badWord);
+		}
 	}
 	
 	/**

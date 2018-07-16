@@ -39,7 +39,7 @@ public class BroadcastConsoleCommand extends ProgramCommandConsole {
 	}
 	
 	@Override
-	public String getDescrition() {
+	public String getDescription() {
 		return "Broadcasts a message to a channel in every guild.";
 	}
 

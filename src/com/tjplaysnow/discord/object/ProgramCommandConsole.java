@@ -25,7 +25,7 @@ public abstract class ProgramCommandConsole {
 	 * This is used for simple help commands.
 	 * @return The command's help information.
 	 */
-	public String getDescrition() {
+	public String getDescription() {
 		return "";
 	}
 	

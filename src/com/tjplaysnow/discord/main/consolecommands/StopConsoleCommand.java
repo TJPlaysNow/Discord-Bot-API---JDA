@@ -24,7 +24,7 @@ public class StopConsoleCommand extends ProgramCommandConsole {
 	}
 	
 	@Override
-	public String getDescrition() {
+	public String getDescription() {
 		return "Stops the program properly.";
 	}
 

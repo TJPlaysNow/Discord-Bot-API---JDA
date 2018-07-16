@@ -30,17 +30,19 @@ public class HelpCommand extends ProgramCommand {
 	
 	@Override
 	public boolean run(User user, MessageChannel channel, Guild guild, String label, List<String> args) {
-		String helpMessage = "**__Commands:__**\n";
+		StringBuilder helpMessage = new StringBuilder("**__Commands:__**\n");
 		for (ProgramCommand command : bot.getCommands()) {
 			if (!channel.getType().equals(ChannelType.PRIVATE)) {
 				if (PermissionUtil.checkPermission(guild.getMember(user), command.getPermissionNeeded())) {
-					helpMessage += "> " + command.getLabel() + "\n   - " + command.getDescription() + "\n";
+					helpMessage.append("> ").append(command.getLabel()).append("\n   - ").append(command.getDescription()).append("\n");
 				}
 			} else {
-				helpMessage = "Sorry, but you need to run this command on the server.";
+				helpMessage = new StringBuilder("Sorry, but you need to run this command on the server.");
 			}
 		}
-		user.openPrivateChannel().complete().sendMessage(helpMessage).complete();
+		
+		
+		user.openPrivateChannel().complete().sendMessage(helpMessage.toString()).complete();
 		return false;
 	}
 }

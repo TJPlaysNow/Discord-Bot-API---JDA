@@ -16,7 +16,7 @@ public class HelpConsoleCommand extends ProgramCommandConsole {
 		System.out.println(" - Help -");
 		for (ProgramCommandConsole command : bot.getConsoleCommands()) {
 			System.out.println("ProgramCommand: " + command.getLabel());
-			System.out.println(" - Description: " + command.getDescrition());
+			System.out.println(" - Description: " + command.getDescription());
 			System.out.println(" - Usage: " + command.getUsage());
 		}
 		System.out.println();
@@ -28,7 +28,7 @@ public class HelpConsoleCommand extends ProgramCommandConsole {
 	}
 	
 	@Override
-	public String getDescrition() {
+	public String getDescription() {
 		return "Returns a list of commands and there information.";
 	}
 

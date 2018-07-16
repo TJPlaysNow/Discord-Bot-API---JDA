@@ -1,5 +1,5 @@
-name: Discord-ProgramBot-API
+name: Discord-Bot-API
 version: 1.0
-main: BungeeMain
+main: com.tjplaysnow.discord.main.BungeeMain
 description: This plugin is an API to use a Discord ProgramBot.
 author: TJPlaysNow

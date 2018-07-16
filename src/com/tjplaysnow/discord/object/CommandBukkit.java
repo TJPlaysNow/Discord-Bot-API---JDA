@@ -9,7 +9,7 @@ public class CommandBukkit extends BukkitCommand {
 	
 	public CommandBukkit(ProgramCommandConsole command) {
 		super(command.getLabel());
-		this.description = command.getDescrition();
+		this.description = command.getDescription();
 		this.usageMessage = "/" + command.getUsage();
 		this.setPermission("console.command");
 		this.command = command;

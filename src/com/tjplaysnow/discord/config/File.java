@@ -38,11 +38,8 @@ public class File {
 			System.out.println(loc);
 			file = Paths.get(loc);
 			Files.createFile(file);
-		} catch (FileAlreadyExistsException e) {
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (URISyntaxException e) {
+		} catch (FileAlreadyExistsException ignored) {
+		} catch (IOException | URISyntaxException e) {
 			e.printStackTrace();
 		}
 	}
@@ -72,5 +69,9 @@ public class File {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public java.io.File getFile() {
+		return file.toFile();
 	}
 }

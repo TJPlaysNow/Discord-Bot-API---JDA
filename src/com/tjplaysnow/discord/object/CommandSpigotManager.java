@@ -2,19 +2,18 @@ package com.tjplaysnow.discord.object;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandMap;
-import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CommandSpigotManager extends ProgramConsoleCommandManager {
 	
-	private Plugin plugin;
 	private List<ProgramCommandConsole> commands;
 	
-	public CommandSpigotManager(Plugin plugin) {
+	public CommandSpigotManager() {
 		super(false);
-		this.plugin = plugin;
+		commands = new ArrayList<>();
 	}
 	
 	@Override

@@ -43,7 +43,7 @@ public abstract class ProgramThread implements Runnable {
 	 * Get whether the thread is still running.
 	 * @return
 	 */
-	protected boolean isRunning() {
+	public boolean isRunning() {
 		return running;
 	}
 }
