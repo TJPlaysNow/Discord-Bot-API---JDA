@@ -1,5 +1,0 @@
-name: Discord-Bot-API
-version: 1.0
-main: com.tjplaysnow.discord.main.PluginMain
-description: This plugin is an API to use a Discord ProgramBot.
-author: TJPlaysNow
