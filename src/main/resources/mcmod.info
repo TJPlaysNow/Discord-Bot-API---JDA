@@ -1,0 +1,18 @@
+[
+    {
+        "modid": "DiscordBotAPI",
+        "name": "Discord Bot API",
+        "version": "3.0",
+        "description": "This plugin is an API to use a Discord ProgramBot.",
+        "url": "http://tjplaysnow.com/",
+        "authorList": [
+            "TJPlaysNow"
+        ],
+        "dependencies": [
+            "spongeapi@7.0.0"
+        ],
+        "requiredMods": [
+            "spongeapi@7.0.0"
+        ]
+    }
+]
