@@ -2,11 +2,11 @@ package com.tjplaysnow.discord.object;
 
 import com.tjplaysnow.discord.object.logger.LogLevel;
 import com.tjplaysnow.discord.object.logger.Logger;
-import net.dv8tion.jda.core.AccountType;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.JDABuilder;
-import net.dv8tion.jda.core.entities.Game;
-import net.dv8tion.jda.core.hooks.EventListener;
+import net.dv8tion.jda.api.AccountType;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.hooks.EventListener;
 import okhttp3.OkHttpClient;
 
 import javax.security.auth.login.LoginException;
@@ -32,7 +32,7 @@ public abstract class ProgramBot implements EventListener {
 	
 	protected void build() {
 		try {
-			jda = new JDABuilder(AccountType.BOT).setToken(token).addEventListener(this).setHttpClient(new OkHttpClient.Builder().build()).build();
+			jda = new JDABuilder(AccountType.BOT).setToken(token).addEventListeners(this).setHttpClient(new OkHttpClient.Builder().build()).build();
 			isOnline = true;
 		} catch (LoginException | IllegalArgumentException e) {
 			e.printStackTrace();
@@ -69,7 +69,7 @@ public abstract class ProgramBot implements EventListener {
 	 * @param game Playing text.
 	 */
 	public void setGame(String game) {
-		jda.getPresence().setPresence(Game.playing(game), true);
+		jda.getPresence().setPresence(Activity.playing(game), true);
 	}
 	
 	/**
@@ -81,13 +81,13 @@ public abstract class ProgramBot implements EventListener {
 	 */
 	public void setActivity(String action, String text) {
 		if (action.equalsIgnoreCase("Listening")) {
-			jda.getPresence().setPresence(Game.listening(text), true);
+			jda.getPresence().setPresence(Activity.listening(text), true);
 		} else if (action.equals("Playing")) {
-			jda.getPresence().setPresence(Game.playing(text), true);
+			jda.getPresence().setPresence(Activity.playing(text), true);
 		} else if (action.equals("Streaming")) {
-			jda.getPresence().setPresence(Game.streaming(text.split(" : ")[0], text.split(" : ")[1]), true);
+			jda.getPresence().setPresence(Activity.streaming(text.split(" : ")[0], text.split(" : ")[1]), true);
 		} else if (action.equals("Watching")) {
-			jda.getPresence().setPresence(Game.watching(text), true);
+			jda.getPresence().setPresence(Activity.watching(text), true);
 		}
 	}
 	

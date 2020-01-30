@@ -3,16 +3,16 @@ package com.tjplaysnow.discord.object;
 import com.tjplaysnow.discord.config.Config;
 import com.tjplaysnow.discord.config.File;
 import com.tjplaysnow.discord.object.logger.LogLevel;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.events.Event;
-import net.dv8tion.jda.core.events.ReadyEvent;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.utils.PermissionUtil;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.Event;
+import net.dv8tion.jda.api.events.GenericEvent;
+import net.dv8tion.jda.api.events.ReadyEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.internal.utils.PermissionUtil;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -30,12 +30,11 @@ public class Bot extends ProgramBot {
 	private Consumer<MessageReceivedEvent> badWordRun;
 	private BiConsumer<MessageReceivedEvent, ProgramCommand> commandRun;
 	
-	private List<Predicate<Event>> events;
+	private List<Predicate<GenericEvent>> events;
 	private Config config;
 	
 	private ProgramThread botThread;
 	private ProgramConsoleCommandManager consoleCommandManager;
-	
 	
 	public Bot(String token, String prefix) {
 		super(token);
@@ -50,7 +49,7 @@ public class Bot extends ProgramBot {
 		events = new ArrayList<>();
 		
 		mutedUserRun = (event) -> {
-			if (PermissionUtil.checkPermission(event.getMember(), Permission.ADMINISTRATOR)) {
+			if (PermissionUtil.checkPermission(Objects.requireNonNull(event.getMember()), Permission.ADMINISTRATOR)) {
 				event.getChannel().sendMessage("You are muted, but you're an admin so oh well.").complete();
 			} else {
 				event.getMessage().delete().complete();
@@ -84,7 +83,7 @@ public class Bot extends ProgramBot {
 							return;
 						}
 					}
-					if (PermissionUtil.checkPermission(event.getMember(), command.getPermissionNeeded())) {
+					if (PermissionUtil.checkPermission(Objects.requireNonNull(event.getMember()), command.getPermissionNeeded())) {
 						logger().info("Running command " + command.getLabel());
 						boolean delete = command.run(sender, channel, guild, commandArgs[0], args);
 						if (delete) {
@@ -111,7 +110,7 @@ public class Bot extends ProgramBot {
 		commands = new ArrayList<>();
 		
 		mutedUserRun = (event) -> {
-			if (PermissionUtil.checkPermission(event.getMember(), Permission.ADMINISTRATOR)) {
+			if (PermissionUtil.checkPermission(Objects.requireNonNull(event.getMember()), Permission.ADMINISTRATOR)) {
 				event.getChannel().sendMessage("You are muted, but you're an admin so oh well.").complete();
 			} else {
 				event.getMessage().delete().complete();
@@ -142,7 +141,7 @@ public class Bot extends ProgramBot {
 							return;
 						}
 					}
-					if (PermissionUtil.checkPermission(event.getMember(), command.getPermissionNeeded())) {
+					if (PermissionUtil.checkPermission(Objects.requireNonNull(event.getMember()), command.getPermissionNeeded())) {
 						logger().info("Running command " + command.getLabel());
 						boolean delete = command.run(sender, channel, guild, commandArgs[0], args);
 						if (delete) {
@@ -310,9 +309,7 @@ public class Bot extends ProgramBot {
 	 * @param badWords The bad words to add.
 	 */
 	public void addBadWords(String... badWords) {
-		for (String badWord : badWords) {
-			this.badWords.add(badWord);
-		}
+		this.badWords.addAll(Arrays.asList(badWords));
 	}
 	
 	/**
@@ -341,9 +338,10 @@ public class Bot extends ProgramBot {
 	
 	/**
 	 * Add an event to the listener.
+	 *
 	 * @param event The event.
 	 */
-	public void addEvent(Predicate<Event> event) {
+	public void addEvent(Predicate<GenericEvent> event) {
 		events.add(event);
 	}
 	
@@ -360,16 +358,16 @@ public class Bot extends ProgramBot {
 	}
 	
 	@Override
-	public void onEvent(Event e) {
+	public void onEvent(@NotNull GenericEvent e) {
 //		Bot login event.
 		if (e instanceof ReadyEvent) {
 			loadAction.run();
 			return;
 		}
-		
+
 //		Bot custom added events.
 		boolean cancelled = false;
-		for (Predicate<Event> event : events) {
+		for (Predicate<GenericEvent> event : events) {
 			if (event.test(e)) {
 				cancelled = true;
 			}
@@ -377,7 +375,7 @@ public class Bot extends ProgramBot {
 		if (cancelled) {
 			return;
 		}
-		
+
 //		Bot receive message events for - Bad words, Muted users, and Commands.
 		if (e instanceof MessageReceivedEvent) {
 			MessageReceivedEvent event = (MessageReceivedEvent) e;

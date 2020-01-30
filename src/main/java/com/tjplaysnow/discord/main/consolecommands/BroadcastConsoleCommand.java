@@ -2,8 +2,8 @@ package com.tjplaysnow.discord.main.consolecommands;
 
 import com.tjplaysnow.discord.object.Bot;
 import com.tjplaysnow.discord.object.ProgramCommandConsole;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.TextChannel;
 
 public class BroadcastConsoleCommand extends ProgramCommandConsole {
 
@@ -27,7 +27,7 @@ public class BroadcastConsoleCommand extends ProgramCommandConsole {
 					}
 					channel.sendMessage(message).complete();
 					System.out.println("Sent the message.");
-					System.out.println("");
+					System.out.println();
 				}
 			}
 		}

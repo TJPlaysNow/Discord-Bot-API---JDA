@@ -1,14 +1,15 @@
 package com.tjplaysnow.discord.main.commands;
 
-import java.util.List;
-
 import com.tjplaysnow.discord.object.Bot;
 import com.tjplaysnow.discord.object.ProgramCommand;
-import net.dv8tion.jda.core.entities.ChannelType;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.utils.PermissionUtil;
+import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.internal.utils.PermissionUtil;
+
+import java.util.List;
+import java.util.Objects;
 
 public class HelpCommand extends ProgramCommand {
 	
@@ -33,7 +34,7 @@ public class HelpCommand extends ProgramCommand {
 		StringBuilder helpMessage = new StringBuilder("**__Commands:__**\n");
 		for (ProgramCommand command : bot.getCommands()) {
 			if (!channel.getType().equals(ChannelType.PRIVATE)) {
-				if (PermissionUtil.checkPermission(guild.getMember(user), command.getPermissionNeeded())) {
+				if (PermissionUtil.checkPermission(Objects.requireNonNull(guild.getMember(user)), command.getPermissionNeeded())) {
 					helpMessage.append("> ").append(command.getLabel()).append("\n   - ").append(command.getDescription()).append("\n");
 				}
 			} else {

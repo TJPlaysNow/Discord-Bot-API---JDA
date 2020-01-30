@@ -20,7 +20,7 @@
         <dependency>
             <groupId>org.spongepowered</groupId>
             <artifactId>spongeapi</artifactId>
-            <version>RELEASE</version>
+            <version>LATEST</version>
             <scope>provided</scope>
         </dependency>
 
@@ -54,7 +54,7 @@
         <repository>
             <id>jcenter</id>
             <name>jcenter-bintray</name>
-            <url>http://jcenter.bintray.com</url>
+            <url>https://jcenter.bintray.com</url>
         </repository>
 
         <!--Sponge API-->

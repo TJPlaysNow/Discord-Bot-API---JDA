@@ -1,6 +1,7 @@
 package com.tjplaysnow.discord.config;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created for use when not using Spigot's version of a config.
@@ -13,8 +14,11 @@ public class Config {
 	
 	private File conf;
 	
+	private Map<String, String> config;
+	
 	/**
 	 * Create a new config.
+	 *
 	 * @param file to format.
 	 */
 	public Config(File file) {
@@ -27,21 +31,21 @@ public class Config {
 	 * @param object Object to place.
 	 */
 	public void set(String path, String object) {
-		List<String> a = conf.readSmallTextFile();
-		int lineNum = a.size();
+		List<String> lines = conf.readSmallTextFile();
+		int lineNum = lines.size();
 		boolean set = false;
-		for (String b : a) {
+		for (String b : lines) {
 			if (b.contains(path + seperator)) {
 				set = true;
-				lineNum = a.indexOf(b);
+				lineNum = lines.indexOf(b);
 			}
 		}
 		if (set) {
-			a.set(lineNum, path + seperator + object);
+			lines.set(lineNum, path + seperator + object);
 		} else {
-			a.add(path + seperator + object);
+			lines.add(path + seperator + object);
 		}
-		conf.writeSmallTextFile(a);
+		conf.writeSmallTextFile(lines);
 	}
 	
 	/**
