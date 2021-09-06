@@ -1,6 +1,7 @@
 # Discord-Bot-API - JDA
 My official API (Wrapper) of JDA for Discord Bots mainly used on Minecraft servers.
-JavaDoc is currently unavailable.
+
+* [Javadoc](https://tjplaysnow.github.io/Discord-Bot-API---JDA/doc/index.html)
 
 * Tutorial:
   * [Text tutorial v1](https://www.spigotmc.org/resources/discord-bot-api-jda.49783/)
