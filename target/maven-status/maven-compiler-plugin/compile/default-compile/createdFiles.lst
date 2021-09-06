@@ -12,6 +12,7 @@ com\tjplaysnow\discord\main\BungeeMain.class
 com\tjplaysnow\discord\main\PluginMain.class
 com\tjplaysnow\discord\main\commands\UnmuteCommand.class
 com\tjplaysnow\discord\main\consolecommands\StopConsoleCommand.class
+com\tjplaysnow\discord\object\ReactionAddEvent.class
 com\tjplaysnow\discord\main\consolecommands\BroadcastConsoleCommand.class
 com\tjplaysnow\discord\object\ProgramThread.class
 com\tjplaysnow\discord\main\commands\HelpCommand.class

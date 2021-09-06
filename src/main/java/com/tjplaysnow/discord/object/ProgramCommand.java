@@ -1,13 +1,12 @@
 package com.tjplaysnow.discord.object;
 
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 /**
@@ -19,12 +18,21 @@ public abstract class ProgramCommand {
 	
 	/**
 	 * This is used to tell what the command's label is.
+	 *
 	 * @return The command's label.
 	 */
 	public abstract String getLabel();
 	
 	/**
+	 * This is for the new command system.
+	 *
+	 * @return The options the command should have.
+	 */
+	public abstract List<OptionData> getOptionData();
+	
+	/**
 	 * This is used for simple help commands.
+	 *
 	 * @return The command's help information.
 	 */
 	public String getDescription() {
@@ -41,14 +49,10 @@ public abstract class ProgramCommand {
 	
 	/**
 	 * Called when the command is ran.
-	 * @param user The user that ran the command.
-	 * @param channel The channel the command was ran in.
-	 * @param guild The guild the command was ran in.
-	 * @param label The label of the command, (used for exact message).
-	 * @param args The args sent with the command.
-	 * @return True or False whether you want to delete the command message.
+	 *
+	 * @param event The slash command event triggered when the event is called.
 	 */
-	protected abstract boolean run(User user, MessageChannel channel, Guild guild, String label, List<String> args);
+	protected abstract boolean run(@NotNull SlashCommandEvent event);
 	
 	/**
 	 * Get's the time to wait before calling <b>delete()</b>
@@ -63,7 +67,8 @@ public abstract class ProgramCommand {
 	 * Default time is 5 seconds, use <b>getDeleteTime()</b>
 	 * to specify how long it should wait.
 	 */
+	@Deprecated
 	protected Consumer<Message> delete() {
-		return (message) -> message.delete().queueAfter(getDeleteTime(), TimeUnit.SECONDS);
+		return (message) -> {/*message.delete().queueAfter(getDeleteTime(), TimeUnit.SECONDS)*/};
 	}
 }

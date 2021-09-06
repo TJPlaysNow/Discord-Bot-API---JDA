@@ -4,48 +4,54 @@ import com.tjplaysnow.discord.config.Config;
 import com.tjplaysnow.discord.config.File;
 import com.tjplaysnow.discord.object.logger.LogLevel;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.ReadyEvent;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class Bot extends ProgramBot {
 	
-	private String prefix;
-	
-	private List<String> badWords;
-	private List<User> mutedUsers;
-	private List<ProgramCommand> commands;
+	private final List<String> badWords;
+	private final List<User> mutedUsers;
+	private final List<ProgramCommand> commands;
 	
 	private Runnable loadAction;
 	private Consumer<MessageReceivedEvent> mutedUserRun;
 	private Consumer<MessageReceivedEvent> badWordRun;
-	private BiConsumer<MessageReceivedEvent, ProgramCommand> commandRun;
-	
-	private List<Predicate<GenericEvent>> events;
+	private final List<ReactionAddEvent> reactionEvents;
+	private final List<Predicate<GenericEvent>> events;
+	private BiConsumer<SlashCommandEvent, ProgramCommand> commandRun;
 	private Config config;
 	
 	private ProgramThread botThread;
 	private ProgramConsoleCommandManager consoleCommandManager;
 	
-	public Bot(String token, String prefix) {
+	public Bot(String token) {
 		super(token);
 		
-		this.prefix = prefix;
-		
 		badWords = new ArrayList<>();
 		mutedUsers = new ArrayList<>();
 		commands = new ArrayList<>();
 		
-		loadAction = () -> {};
+		loadAction = () -> {
+		};
 		events = new ArrayList<>();
 		
 		mutedUserRun = (event) -> {
@@ -65,47 +71,39 @@ public class Bot extends ProgramBot {
 		};
 		
 		commandRun = (event, command) -> {
-			if (event.getMessage().getContentRaw().startsWith(getPrefix())) {
-				User sender = event.getAuthor();
-				MessageChannel channel = event.getChannel();
-				Guild guild = event.getGuild();
-				String[] commandArgs = event.getMessage().getContentRaw().substring(getPrefix().length()).split(" ");
-				List<String> args = new ArrayList<>();
-				Collections.addAll(args, commandArgs);
-				args.remove(0);
-				if (commandArgs[0].equalsIgnoreCase(command.getLabel())) {
-					if (command.getPermissionNeeded().equals(Permission.MESSAGE_WRITE)) {
-						if (event.getChannel().getType().equals(ChannelType.PRIVATE)) {
-							boolean delete = command.run(sender, channel, guild, commandArgs[0], args);
-							if (delete) {
-								event.getMessage().delete().complete();
-							}
-							return;
-						}
+			event.deferReply().queue();
+			if (command.getPermissionNeeded().equals(Permission.MESSAGE_WRITE)) {
+				if (event.getChannel().getType().equals(ChannelType.PRIVATE)) {
+					boolean alt = command.run(event);
+					if (alt) {
+					
 					}
-					if (PermissionUtil.checkPermission(Objects.requireNonNull(event.getMember()), command.getPermissionNeeded())) {
-						logger().info("Running command " + command.getLabel());
-						boolean delete = command.run(sender, channel, guild, commandArgs[0], args);
-						if (delete) {
-							event.getMessage().delete().complete();
-						}
-					}
+					return;
+				}
+			}
+			if (PermissionUtil.checkPermission(Objects.requireNonNull(event.getMember()), command.getPermissionNeeded())) {
+				logger().info("Running command " + command.getLabel());
+				boolean alt = command.run(event);
+				if (alt) {
+				
 				}
 			}
 		};
 		
+		reactionEvents = new ArrayList<>();
+		
 		build();
+		jda.addEventListener(new SlashCommandEvents(this));
 	}
 	
-	public Bot(String token, String prefix, LogLevel logLevel) {
+	public Bot(String token, LogLevel logLevel) {
 		super(token, logLevel);
-		
-		this.prefix = prefix;
 		
 		badWords = new ArrayList<>();
 		mutedUsers = new ArrayList<>();
 		
-		loadAction = () -> {};
+		loadAction = () -> {
+		};
 		events = new ArrayList<>();
 		commands = new ArrayList<>();
 		
@@ -126,33 +124,29 @@ public class Bot extends ProgramBot {
 		};
 		
 		commandRun = (event, command) -> {
-			if (event.getMessage().getContentRaw().startsWith(getPrefix())) {
-				User sender = event.getAuthor();
-				MessageChannel channel = event.getChannel();
-				Guild guild = event.getGuild();
-				String[] commandArgs = event.getMessage().getContentRaw().substring(getPrefix().length()).split(" ");
-				List<String> args = new ArrayList<>();
-				Collections.addAll(args, commandArgs);
-				args.remove(0);
-				if (commandArgs[0].equalsIgnoreCase(command.getLabel())) {
-					if (command.getPermissionNeeded().equals(Permission.MESSAGE_WRITE)) {
-						if (event.getChannel().getType().equals(ChannelType.PRIVATE)) {
-							command.run(sender, channel, guild, commandArgs[0], args);
-							return;
-						}
+			event.deferReply().queue();
+			if (command.getPermissionNeeded().equals(Permission.MESSAGE_WRITE)) {
+				if (event.getChannel().getType().equals(ChannelType.PRIVATE)) {
+					boolean alt = command.run(event);
+					if (alt) {
+					
 					}
-					if (PermissionUtil.checkPermission(Objects.requireNonNull(event.getMember()), command.getPermissionNeeded())) {
-						logger().info("Running command " + command.getLabel());
-						boolean delete = command.run(sender, channel, guild, commandArgs[0], args);
-						if (delete) {
-							event.getMessage().delete().complete();
-						}
-					}
+					return;
+				}
+			}
+			if (PermissionUtil.checkPermission(Objects.requireNonNull(event.getMember()), command.getPermissionNeeded())) {
+				logger().info("Running command " + command.getLabel());
+				boolean alt = command.run(event);
+				if (alt) {
+				
 				}
 			}
 		};
 		
+		reactionEvents = new ArrayList<>();
+		
 		build();
+		jda.addEventListener(new SlashCommandEvents(this));
 	}
 	
 	public void setBotThread(ProgramThread botThread) {
@@ -171,16 +165,17 @@ public class Bot extends ProgramBot {
 		this.badWordRun = badWordRun;
 	}
 	
-	public void setCommandRun(BiConsumer<MessageReceivedEvent, ProgramCommand> commandRun) {
+	public void setCommandRun(BiConsumer<SlashCommandEvent, ProgramCommand> commandRun) {
 		this.commandRun = commandRun;
 	}
 	
-	public String getPrefix() {
-		return prefix;
+	public void addReactionEvent(long messageID, Consumer<MessageReactionAddEvent> event) {
+		reactionEvents.add(new ReactionAddEvent(messageID, event));
 	}
 	
 	/**
 	 * Action to use on ProgramBot loadup.
+	 *
 	 * @param loadAction The action to be run.
 	 */
 	public void setLoadAction(Runnable loadAction) {
@@ -192,7 +187,12 @@ public class Bot extends ProgramBot {
 	 * @param command A new command.
 	 */
 	public void addCommand(ProgramCommand command) {
-		commands.add(command);
+		if (command.getOptionData() != null) {
+			jda.upsertCommand(command.getLabel(), command.getDescription()).addOptions(command.getOptionData()).queue();
+		} else {
+			jda.upsertCommand(command.getLabel(), command.getDescription()).complete();
+		}
+		this.commands.add(command);
 	}
 	
 	/**
@@ -221,21 +221,34 @@ public class Bot extends ProgramBot {
 			public String getLabel() {
 				return command.getLabel();
 			}
+			
+			@Override
+			public List<OptionData> getOptionData() {
+				return null;
+			}
+			
 			@Override
 			public Permission getPermissionNeeded() {
 				return command.getPermissionNeeded();
 			}
+			
 			@Override
 			public String getDescription() {
 				return command.getDescription();
 			}
+			
 			@Override
 			protected int getDeleteTime() {
 				return command.getDeleteTime();
 			}
+			
 			@Override
-			protected boolean run(User user, MessageChannel channel, Guild guild, String label, List<String> args) {
-				return command.run(user, channel, guild, label, args);
+			protected boolean run(SlashCommandEvent event) {
+				List<String> args = new ArrayList<>();
+				for (OptionMapping option : event.getOptions()) {
+					args.add(option.getAsString());
+				}
+				return command.run(event.getUser(), event.getChannel(), event.getGuild(), event.getName(), args);
 			}
 		});
 	}
@@ -386,17 +399,25 @@ public class Bot extends ProgramBot {
 					badWordRun.accept(event);
 				}
 			}
-			
+
 //			Muted user check.
 			for (User user : mutedUsers) {
 				if (user.getId().equals(event.getAuthor().getId())) {
 					mutedUserRun.accept(event);
 				}
 			}
-			
+
 //			ProgramCommand check.
-			for (ProgramCommand command : commands) {
-				commandRun.accept(event, command);
+//			for (ProgramCommand command : commands) {
+//				commandRun.accept(event, command);
+//			}
+		} else if (e instanceof MessageReactionAddEvent) {
+//			Message Reaction Add Check.
+			MessageReactionAddEvent event = (MessageReactionAddEvent) e;
+			for (ReactionAddEvent reactionEvent : reactionEvents) {
+				if (reactionEvent.getMessageID().equals(event.getMessageIdLong())) {
+					reactionEvent.getEvent().accept(event);
+				}
 			}
 		}
 	}

@@ -3,17 +3,16 @@ package com.tjplaysnow.discord.main.commands;
 import com.tjplaysnow.discord.object.Bot;
 import com.tjplaysnow.discord.object.ProgramCommand;
 import net.dv8tion.jda.api.entities.ChannelType;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Objects;
 
 public class HelpCommand extends ProgramCommand {
 	
-	private Bot bot;
+	private final Bot bot;
 	
 	public HelpCommand(Bot bot) {
 		this.bot = bot;
@@ -21,7 +20,12 @@ public class HelpCommand extends ProgramCommand {
 	
 	@Override
 	public String getLabel() {
-		return "Help";
+		return "help";
+	}
+	
+	@Override
+	public List<OptionData> getOptionData() {
+		return null;
 	}
 	
 	@Override
@@ -30,20 +34,22 @@ public class HelpCommand extends ProgramCommand {
 	}
 	
 	@Override
-	public boolean run(User user, MessageChannel channel, Guild guild, String label, List<String> args) {
+	public boolean run(@NotNull SlashCommandEvent event) {
 		StringBuilder helpMessage = new StringBuilder("**__Commands:__**\n");
 		for (ProgramCommand command : bot.getCommands()) {
-			if (!channel.getType().equals(ChannelType.PRIVATE)) {
-				if (PermissionUtil.checkPermission(Objects.requireNonNull(guild.getMember(user)), command.getPermissionNeeded())) {
-					helpMessage.append("> ").append(command.getLabel()).append("\n   - ").append(command.getDescription()).append("\n");
+			if (!event.getChannel().getType().equals(ChannelType.PRIVATE)) {
+				if (event.getMember() != null) {
+					if (PermissionUtil.checkPermission(event.getGuildChannel(), event.getMember(), command.getPermissionNeeded())) {
+						helpMessage.append("> ").append(command.getLabel()).append("\n   - ").append(command.getDescription()).append("\n");
+					}
+				} else {
+					helpMessage = new StringBuilder("Sorry, but your member object is null. (Because you are OP possibly)");
 				}
 			} else {
 				helpMessage = new StringBuilder("Sorry, but you need to run this command on the server.");
 			}
 		}
-		
-		
-		user.openPrivateChannel().complete().sendMessage(helpMessage.toString()).complete();
+		event.getHook().sendMessage(helpMessage.toString()).queue();
 		return false;
 	}
 }

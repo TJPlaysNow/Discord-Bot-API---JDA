@@ -2,23 +2,21 @@ package com.tjplaysnow.discord.object;
 
 import com.tjplaysnow.discord.object.logger.LogLevel;
 import com.tjplaysnow.discord.object.logger.Logger;
-import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.hooks.EventListener;
-import okhttp3.OkHttpClient;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import javax.security.auth.login.LoginException;
+import java.util.EnumSet;
 
 public abstract class ProgramBot implements EventListener {
 	
-	private String token;
-	
-	private JDA jda;
+	private final String token;
+	private final Logger logger;
 	private boolean isOnline;
-	
-	private Logger logger;
+	protected JDA jda;
 	
 	protected ProgramBot(String token) {
 		this.token = token;
@@ -32,7 +30,8 @@ public abstract class ProgramBot implements EventListener {
 	
 	protected void build() {
 		try {
-			jda = new JDABuilder(AccountType.BOT).setToken(token).addEventListeners(this).setHttpClient(new OkHttpClient.Builder().build()).build();
+			jda = JDABuilder.createDefault(token, EnumSet.allOf(GatewayIntent.class)).addEventListeners(this).build();
+			jda.updateCommands().queue();
 			isOnline = true;
 		} catch (LoginException | IllegalArgumentException e) {
 			e.printStackTrace();
