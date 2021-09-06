@@ -7,7 +7,7 @@ JavaDoc is currently unavailable.
 
 ## 🌈 How to install
 
-To install you can use maven, gradle or [build path](https://drive.google.com/open?id=1CcFxBgPwmlsEq37rW7LsxwJqVfAxfm1b)
+To install you can use maven, gradle or [build path](https://github.com/TJPlaysNow/Discord-Bot-API---JDA/raw/master/out/Discord%20Bot%20API%20V%205.0.jar)
 
 #### 🍕 Repository
 
