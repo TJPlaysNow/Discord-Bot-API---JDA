@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.ReadyEvent;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -37,7 +37,7 @@ public class Bot extends ProgramBot {
 	private Consumer<MessageReceivedEvent> badWordRun;
 	private final List<ReactionAddEvent> reactionEvents;
 	private final List<Predicate<GenericEvent>> events;
-	private BiConsumer<SlashCommandEvent, ProgramCommand> commandRun;
+	private BiConsumer<SlashCommandInteractionEvent, ProgramCommand> commandRun;
 	private Config config;
 	
 	private ProgramThread botThread;
@@ -72,7 +72,7 @@ public class Bot extends ProgramBot {
 		
 		commandRun = (event, command) -> {
 			event.deferReply().queue();
-			if (command.getPermissionNeeded().equals(Permission.MESSAGE_WRITE)) {
+			if (command.getPermissionNeeded().equals(Permission.MESSAGE_SEND)) {
 				if (event.getChannel().getType().equals(ChannelType.PRIVATE)) {
 					boolean alt = command.run(event);
 					if (alt) {
@@ -125,7 +125,7 @@ public class Bot extends ProgramBot {
 		
 		commandRun = (event, command) -> {
 			event.deferReply().queue();
-			if (command.getPermissionNeeded().equals(Permission.MESSAGE_WRITE)) {
+			if (command.getPermissionNeeded().equals(Permission.MESSAGE_SEND)) {
 				if (event.getChannel().getType().equals(ChannelType.PRIVATE)) {
 					boolean alt = command.run(event);
 					if (alt) {
@@ -165,7 +165,7 @@ public class Bot extends ProgramBot {
 		this.badWordRun = badWordRun;
 	}
 	
-	public void setCommandRun(BiConsumer<SlashCommandEvent, ProgramCommand> commandRun) {
+	public void setCommandRun(BiConsumer<SlashCommandInteractionEvent, ProgramCommand> commandRun) {
 		this.commandRun = commandRun;
 	}
 	
@@ -243,7 +243,7 @@ public class Bot extends ProgramBot {
 			}
 			
 			@Override
-			protected boolean run(SlashCommandEvent event) {
+			protected boolean run(SlashCommandInteractionEvent event) {
 				List<String> args = new ArrayList<>();
 				for (OptionMapping option : event.getOptions()) {
 					args.add(option.getAsString());

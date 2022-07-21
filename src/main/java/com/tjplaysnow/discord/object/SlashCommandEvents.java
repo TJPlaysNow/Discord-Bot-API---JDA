@@ -1,6 +1,6 @@
 package com.tjplaysnow.discord.object;
 
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,7 +13,7 @@ public class SlashCommandEvents extends ListenerAdapter {
 	}
 	
 	@Override
-	public void onSlashCommand(@NotNull SlashCommandEvent event) {
+	public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
 		for (ProgramCommand command : bot.getCommands()) {
 			if (event.getName().equals(command.getLabel())) {
 				event.deferReply().queue();

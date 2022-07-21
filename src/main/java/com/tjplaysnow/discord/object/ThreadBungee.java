@@ -7,10 +7,10 @@ import java.util.concurrent.TimeUnit;
 
 public class ThreadBungee extends ProgramThread {
 	
-	private Plugin plugin;
+	private final Plugin plugin;
 	
-	protected ThreadBungee(boolean thread) {
-		super(thread);
+	protected ThreadBungee(Plugin plugin) {
+		super(false);
 		this.plugin = plugin;
 	}
 	

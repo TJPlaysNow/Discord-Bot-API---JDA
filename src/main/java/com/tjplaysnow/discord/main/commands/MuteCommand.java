@@ -4,7 +4,7 @@ import com.tjplaysnow.discord.object.Bot;
 import com.tjplaysnow.discord.object.ProgramCommand;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
@@ -40,7 +40,7 @@ public class MuteCommand extends ProgramCommand {
 	}
 	
 	@Override
-	public boolean run(SlashCommandEvent event) {
+	public boolean run(SlashCommandInteractionEvent event) {
 		Member member = event.getOption("user").getAsMember();
 		if (member != null) {
 			bot.addMutedUser(member.getUser());

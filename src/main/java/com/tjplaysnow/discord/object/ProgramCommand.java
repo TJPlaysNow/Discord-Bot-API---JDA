@@ -2,7 +2,7 @@ package com.tjplaysnow.discord.object;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.jetbrains.annotations.NotNull;
 
@@ -44,7 +44,7 @@ public abstract class ProgramCommand {
 	 * @return <b>Permission</b> to run the command.
 	 */
 	public Permission getPermissionNeeded() {
-		return Permission.MESSAGE_WRITE;
+		return Permission.MESSAGE_SEND;
 	}
 	
 	/**
@@ -52,7 +52,7 @@ public abstract class ProgramCommand {
 	 *
 	 * @param event The slash command event triggered when the event is called.
 	 */
-	protected abstract boolean run(@NotNull SlashCommandEvent event);
+	protected abstract boolean run(@NotNull SlashCommandInteractionEvent event);
 	
 	/**
 	 * Get's the time to wait before calling <b>delete()</b>

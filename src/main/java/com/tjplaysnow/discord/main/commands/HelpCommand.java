@@ -3,7 +3,7 @@ package com.tjplaysnow.discord.main.commands;
 import com.tjplaysnow.discord.object.Bot;
 import com.tjplaysnow.discord.object.ProgramCommand;
 import net.dv8tion.jda.api.entities.ChannelType;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 import org.jetbrains.annotations.NotNull;
@@ -34,12 +34,12 @@ public class HelpCommand extends ProgramCommand {
 	}
 	
 	@Override
-	public boolean run(@NotNull SlashCommandEvent event) {
+	public boolean run(@NotNull SlashCommandInteractionEvent event) {
 		StringBuilder helpMessage = new StringBuilder("**__Commands:__**\n");
 		for (ProgramCommand command : bot.getCommands()) {
 			if (!event.getChannel().getType().equals(ChannelType.PRIVATE)) {
 				if (event.getMember() != null) {
-					if (PermissionUtil.checkPermission(event.getGuildChannel(), event.getMember(), command.getPermissionNeeded())) {
+					if (PermissionUtil.checkPermission(event.getMember(), command.getPermissionNeeded())) {
 						helpMessage.append("> ").append(command.getLabel()).append("\n   - ").append(command.getDescription()).append("\n");
 					}
 				} else {
