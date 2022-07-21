@@ -13,7 +13,7 @@ public class CommandBungeeManager extends ProgramConsoleCommandManager {
 	private final List<ProgramCommandConsole> commands;
 	private final Plugin plugin;
 	
-	protected CommandBungeeManager(Plugin plugin) {
+	public CommandBungeeManager(Plugin plugin) {
 		super(false);
 		commands = new ArrayList<>();
 		this.plugin = plugin;

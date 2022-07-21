@@ -9,7 +9,7 @@ public class ThreadBungee extends ProgramThread {
 	
 	private final Plugin plugin;
 	
-	protected ThreadBungee(Plugin plugin) {
+	public ThreadBungee(Plugin plugin) {
 		super(false);
 		this.plugin = plugin;
 	}
