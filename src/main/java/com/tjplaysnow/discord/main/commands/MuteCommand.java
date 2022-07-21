@@ -36,7 +36,7 @@ public class MuteCommand extends ProgramCommand {
 	
 	@Override
 	public List<OptionData> getOptionData() {
-		return Collections.singletonList(new OptionData(OptionType.USER, "user", "The user to mute.", true));
+		return Collections.singletonList(new OptionData(OptionType.STRING, "user", "The user to mute.", true).addChoice("", 1));
 	}
 	
 	@Override
